@@ -98,6 +98,15 @@ const orderSchema = new mongoose.Schema(
                 },
             ],
             validate: [arr => arr.length > 0, "Order must have at least one product."]
+        },
+        status: {
+            type: String,
+            enum: {
+                values: ["pending", "paid", "shipped", "delivered", "cancelled"],
+                message: "Status `{VALUE}` is not valid."
+            },
+            default: "pending",
+            required: true
         }
     },
     {
