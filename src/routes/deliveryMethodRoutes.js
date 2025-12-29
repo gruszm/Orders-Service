@@ -1,7 +1,7 @@
 import express from "express";
 import { StatusCodes as HttpStatus } from "http-status-codes";
 import { checkUserHeader } from "../utils/utils.js";
-import { createDeliveryMethod, getAllDeliveryMethods } from "../services/deliveryMethodService.js";
+import { createDeliveryMethod, getAllDeliveryMethods, getDeliveryMethodById } from "../services/deliveryMethodService.js";
 
 export const publicDeliveryMethodRouter = express.Router();
 export const secureDeliveryMethodRouter = express.Router();
@@ -15,6 +15,26 @@ publicDeliveryMethodRouter.get("/", async (req, res) => {
         const deliveryMethods = await getAllDeliveryMethods();
 
         res.status(HttpStatus.OK).json(deliveryMethods);
+    } catch (error) {
+        console.log(`Error on endpoint: ${req.baseUrl + req.url}\n${error.message}`);
+
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: "Internal server error." });
+    }
+});
+
+/**
+ * @param {express.Request} req
+ * @param {express.Response} res
+ */
+publicDeliveryMethodRouter.get("/:id", async (req, res) => {
+    try {
+        const deliveryMethod = await getDeliveryMethodById(req.params.id);
+
+        if (!deliveryMethod) {
+            res.status(HttpStatus.NOT_FOUND).send();
+        } else {
+            res.json(deliveryMethod);
+        }
     } catch (error) {
         console.log(`Error on endpoint: ${req.baseUrl + req.url}\n${error.message}`);
 
